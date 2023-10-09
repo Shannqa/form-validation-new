@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+}
+
+input, select {
+  width: 200px;
+  margin-bottom: 6px;
+}
+
+label {
+  margin-bottom: 2px;
+}
+
+span {
+  width: max-content;
+}
+
+button {
+  width: 200px;
+  height: 24px;
+  margin-top: 6px;
+}
+
+.error-inactive {
+  border: 2px green solid;
+}
+
+.error-active {
+  border: 2px red solid;
+}
+
+.invalid {
+  background-color: rgba(255, 0, 0, 0.7);
+}

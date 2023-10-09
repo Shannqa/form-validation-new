@@ -93,14 +93,15 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
 });
 
-// on loading page, check of its empty or valid
-window.addEventListener("load", () => {
-  const emailRegExp =
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  const emailValid =
-    inputEmail.value.length === 0 || emailRegExp.test(inputEmail.value);
-  inputEmail.className = emailValid ? "valid" : "invalid";
-});
+// // on loading page, check of its empty or valid
+// window.addEventListener("load", () => {
+//   const emailRegExp =
+//     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+//   const emailValid =
+//     inputEmail.value.length === 0 || emailRegExp.test(inputEmail.value);
+//   inputEmail.className = emailValid ? "error-inactive" : "error-active";
+// });
+
 // check validity on input
 inputEmail.addEventListener("input", () => {
   const emailRegExp =
@@ -109,20 +110,20 @@ inputEmail.addEventListener("input", () => {
     inputEmail.value.length === 0 || emailRegExp.test(inputEmail.value);
 
   if (emailValid) {
-    inputEmail.className = "valid";
-    spanEmail.textContent = "";
     inputEmail.className = "error-inactive";
+    spanEmail.textContent = "";
+    spanEmail.className = "valid";
   } else {
-    inputEmail.className = "invalid";
+    inputEmail.className = "error-active";
   }
 });
 
 function checkFormValidity() {
   // checking the form on submit check if thats how you add empty attrs
-
+  form.setAttribute("novalidate", true);
   const emailRegExp =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  form.setAttribute("novalidate", true);
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -130,12 +131,12 @@ function checkFormValidity() {
     const emailValid =
       inputEmail.value.length === 0 || emailRegExp.test(inputEmail.value);
     if (!emailValid) {
-      spanEmail.className = "invalid";
+      inputEmail.className = "invalid";
+      spanEmail.className = "error-active";
       spanEmail.textContent = "Please enter a valid email address.";
-      inputEmail.className = "error-active";
     } else {
-      inputEmail.className = "error-inactive";
       inputEmail.className = "valid";
+      spanEmail.className = "error-inactive";
       spanEmail.textContent = "";
     }
 
@@ -143,13 +144,13 @@ function checkFormValidity() {
     // choose an option: poland, switzerland, france, netherlands
 
     if (selectCountry.value === "choose") {
-      spanCountry.className = "invalid";
+      selectCountry.className = "invalid";
+      spanCountry.className = "error-active";
       spanCountry.textContent = "This field is required.";
-      selectCountry.className = "error-active";
     } else {
-      spanCountry.className = "valid";
+      selectCountry.className = "valid";
+      spanCountry.className = "error-inactive";
       spanCountry.textContent = "";
-      selectCountry.className = "error-inactive";
     }
 
     // zip code - required, pattern
@@ -179,21 +180,51 @@ function checkFormValidity() {
 
     const countryCurrent = selectCountry.value;
 
-    const zipConstr = new RegExp(zipPatterns[countryCurrent][0], "");
+    const zipTest = new RegExp(zipPatterns[countryCurrent][0], "");
 
     if (!zipValid) {
+      inputZip.className = "invalid";
       spanZip.textContent = "This field is required";
-      spanZip.className = "invalid";
-      inputZip.className = "error-active";
+      spanZip.className = "error-active";
     } else {
-      if (zipConstr.test(inputZip.value)) {
+      if (zipTest.test(inputZip.value)) {
+        inputZip.className = "valid";
         spanZip.textContent = "";
-        spanZip.className = "valid";
-        inputZip.className = "error-inactive";
+        spanZip.className = "error-inactive";
       } else {
+        inputZip.className = "invalid";
         spanZip.textContent = zipPatterns[countryCurrent][1];
-        spanZip.className = "invalid";
-        inputZip.className = "error-active";
+        spanZip.className = "error-active";
+      }
+    }
+
+    // password
+    const passRegExp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[\\d])[A-Za-z\\d]{8,}$";
+    const passTip =
+      "The password must be 8 or more characters and contain at least one uppercase letter, one lowercase letter and one digit.";
+    const passValid = inputPass.value.length;
+    const passTest = new RegExp(passRegExp, "");
+
+    if (inputPass.value !== inputPassConf.value) {
+      inputPass.className = "invalid";
+      inputPassConf.className = "invalid";
+      spanPass.textContent = "Passwords do not match.";
+      spanPassConf.textContent = "Passwords do not match.";
+      spanPass.className = "error-active";
+      spanPassConf.className = "error-active";
+    } else if (!passValid) {
+      inputPass.className = "invalid";
+      spanPass.textContent = "This field is required";
+      spanPass.className = "error-active";
+    } else {
+      if (passTest.test(inputPass.value)) {
+        inputPass.className = "valid";
+        spanPass.textContent = "";
+        spanPass.className = "error-inactive";
+      } else {
+        inputPass.className = "invalid";
+        spanPass.textContent = passTip;
+        spanPass.className = "error-active";
       }
     }
   });

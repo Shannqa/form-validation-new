@@ -66,6 +66,8 @@ optionCH.textContent = "Switzerland";
 optionFR.textContent = "France";
 optionNL.textContent = "Netherlands";
 
+spanPass.className = "span-pass";
+
 selectCountry.appendChild(optionChoose);
 selectCountry.appendChild(optionPL);
 selectCountry.appendChild(optionCH);

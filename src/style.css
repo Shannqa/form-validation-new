@@ -16,10 +16,17 @@ input, select {
 
 label {
   margin-bottom: 2px;
+  font-weight: bold;
 }
 
 span {
-  width: max-content;
+  width: fit-content;
+  margin-bottom: 4px;
+
+}
+
+.span-pass {
+  font-size: 0.8rem;
 }
 
 button {

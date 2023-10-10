@@ -50,12 +50,15 @@ optionPL.setAttribute("value", "pl");
 optionCH.setAttribute("value", "ch");
 optionFR.setAttribute("value", "fr");
 optionNL.setAttribute("value", "nl");
+form.setAttribute("novalidate", true);
 
 labelEmail.textContent = "Email address:";
 labelCountry.textContent = "Country:";
-labelZip.textContent = "Zip code";
-labelPass.textContent = "Password:";
-labelPassConf.textContent = "Confirm password:";
+labelZip.textContent = "Zip code (required):";
+labelPass.textContent = "Password (required):";
+spanPass.textContent =
+  "Min. 8 characters, one upper- and lowercase letter and one number.";
+labelPassConf.textContent = "Confirm password (required):";
 button.textContent = "Submit";
 optionChoose.textContent = "-- Choose a country --";
 optionPL.textContent = "Poland";
@@ -89,145 +92,125 @@ body.appendChild(form);
 
 // validity
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-});
-
-// // on loading page, check of its empty or valid
-// window.addEventListener("load", () => {
-//   const emailRegExp =
-//     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-//   const emailValid =
-//     inputEmail.value.length === 0 || emailRegExp.test(inputEmail.value);
-//   inputEmail.className = emailValid ? "error-inactive" : "error-active";
-// });
-
-// check validity on input
-inputEmail.addEventListener("input", () => {
+function checkEmail() {
   const emailRegExp =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
   const emailValid =
     inputEmail.value.length === 0 || emailRegExp.test(inputEmail.value);
-
-  if (emailValid) {
-    inputEmail.className = "error-inactive";
-    spanEmail.textContent = "";
-    spanEmail.className = "valid";
+  if (!emailValid) {
+    inputEmail.className = "invalid";
+    spanEmail.className = "error-active";
+    spanEmail.textContent = "Please enter a valid email address.";
   } else {
-    inputEmail.className = "error-active";
+    inputEmail.className = "valid";
+    spanEmail.className = "error-inactive";
+    spanEmail.textContent = "";
   }
-});
-
-function checkFormValidity() {
-  // checking the form on submit check if thats how you add empty attrs
-  form.setAttribute("novalidate", true);
-  const emailRegExp =
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    // email
-    const emailValid =
-      inputEmail.value.length === 0 || emailRegExp.test(inputEmail.value);
-    if (!emailValid) {
-      inputEmail.className = "invalid";
-      spanEmail.className = "error-active";
-      spanEmail.textContent = "Please enter a valid email address.";
-    } else {
-      inputEmail.className = "valid";
-      spanEmail.className = "error-inactive";
-      spanEmail.textContent = "";
-    }
-
-    // country - required
-    // choose an option: poland, switzerland, france, netherlands
-
-    if (selectCountry.value === "choose") {
-      selectCountry.className = "invalid";
-      spanCountry.className = "error-active";
-      spanCountry.textContent = "This field is required.";
-    } else {
-      selectCountry.className = "valid";
-      spanCountry.className = "error-inactive";
-      spanCountry.textContent = "";
-    }
-
-    // zip code - required, pattern
-
-    const zipValid = inputZip.value.length;
-
-    const zipPatterns = {
-      choose: ["", ""],
-      pl: [
-        "^\\d{2}-\\d{3}$",
-        "Poland's zipcodes must follow this pattern: 2 digits, followed by a hyphen (-), followed by 3 digits, e.g. 12-345.",
-      ],
-      ch: [
-        "^(CH-)?\\d{4}$",
-        "Switzerland's zipcodes must follow this pattern: optional 'CH-' and 4 digits, e.g. CH-1234 or 1234.",
-      ],
-      fr: [
-        "^(F-)?\\d{5}$",
-        "France's zipcodes must follow this pattern: optional 'FR-', followed by 5 digits, e.g. FR-12345 or 12345.",
-      ],
-      nl: [
-        "^(NL-)?\\d{4}\\s*([A-RT-Z][A-Z]|S[BCE-RT-Z])$",
-        "Netherland's zipcodes must follow this pattern: 4 digits followed by 2 letters except SA, SD and SS.",
-      ],
-    };
-    // eslint-disable-next-line no-unused-vars
-
-    const countryCurrent = selectCountry.value;
-
-    const zipTest = new RegExp(zipPatterns[countryCurrent][0], "");
-
-    if (!zipValid) {
-      inputZip.className = "invalid";
-      spanZip.textContent = "This field is required";
-      spanZip.className = "error-active";
-    } else {
-      if (zipTest.test(inputZip.value)) {
-        inputZip.className = "valid";
-        spanZip.textContent = "";
-        spanZip.className = "error-inactive";
-      } else {
-        inputZip.className = "invalid";
-        spanZip.textContent = zipPatterns[countryCurrent][1];
-        spanZip.className = "error-active";
-      }
-    }
-
-    // password
-    const passRegExp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[\\d])[A-Za-z\\d]{8,}$";
-    const passTip =
-      "The password must be 8 or more characters and contain at least one uppercase letter, one lowercase letter and one digit.";
-    const passValid = inputPass.value.length;
-    const passTest = new RegExp(passRegExp, "");
-
-    if (inputPass.value !== inputPassConf.value) {
-      inputPass.className = "invalid";
-      inputPassConf.className = "invalid";
-      spanPass.textContent = "Passwords do not match.";
-      spanPassConf.textContent = "Passwords do not match.";
-      spanPass.className = "error-active";
-      spanPassConf.className = "error-active";
-    } else if (!passValid) {
-      inputPass.className = "invalid";
-      spanPass.textContent = "This field is required";
-      spanPass.className = "error-active";
-    } else {
-      if (passTest.test(inputPass.value)) {
-        inputPass.className = "valid";
-        spanPass.textContent = "";
-        spanPass.className = "error-inactive";
-      } else {
-        inputPass.className = "invalid";
-        spanPass.textContent = passTip;
-        spanPass.className = "error-active";
-      }
-    }
-  });
 }
 
-checkFormValidity();
+function checkCountry() {
+  if (selectCountry.value === "choose") {
+    selectCountry.className = "invalid";
+    spanCountry.className = "error-active";
+    spanCountry.textContent = "This field is required.";
+  } else {
+    selectCountry.className = "valid";
+    spanCountry.className = "error-inactive";
+    spanCountry.textContent = "";
+  }
+}
+
+function checkZipcode() {
+  const zipValid = inputZip.value.length;
+
+  const zipPatterns = {
+    choose: ["", ""],
+    pl: [
+      "^\\d{2}-\\d{3}$",
+      "Poland's zipcodes must follow this pattern: 2 digits, followed by a hyphen (-), followed by 3 digits, e.g. 12-345.",
+    ],
+    ch: [
+      "^(CH-)?\\d{4}$",
+      "Switzerland's zipcodes must follow this pattern: optional 'CH-' and 4 digits, e.g. CH-1234 or 1234.",
+    ],
+    fr: [
+      "^(F-)?\\d{5}$",
+      "France's zipcodes must follow this pattern: optional 'FR-', followed by 5 digits, e.g. FR-12345 or 12345.",
+    ],
+    nl: [
+      "^(NL-)?\\d{4}\\s*([A-RT-Z][A-Z]|S[BCE-RT-Z])$",
+      "Netherland's zipcodes must follow this pattern: 4 digits followed by 2 letters except SA, SD and SS.",
+    ],
+  };
+
+  const countryCurrent = selectCountry.value;
+
+  const zipTest = new RegExp(zipPatterns[countryCurrent][0], "");
+
+  if (!zipValid) {
+    inputZip.className = "invalid";
+    spanZip.textContent = "This field is required";
+    spanZip.className = "error-active";
+  } else {
+    if (zipTest.test(inputZip.value)) {
+      inputZip.className = "valid";
+      spanZip.textContent = "";
+      spanZip.className = "error-inactive";
+    } else {
+      inputZip.className = "invalid";
+      spanZip.textContent = zipPatterns[countryCurrent][1];
+      spanZip.className = "error-active";
+    }
+  }
+}
+
+function checkPassword() {
+  const passRegExp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[\\d])[A-Za-z\\d]{8,}$";
+  const passTip =
+    "The password must be 8 or more characters and contain at least one uppercase letter, one lowercase letter and one digit.";
+  const passValid = inputPass.value.length;
+  const passConfValid = inputPassConf.value.length;
+  const passTest = new RegExp(passRegExp, "");
+
+  if (inputPass.value !== inputPassConf.value) {
+    inputPass.className = "invalid";
+    inputPassConf.className = "invalid";
+    spanPass.textContent = "Passwords do not match.";
+    spanPassConf.textContent = "Passwords do not match.";
+    spanPass.className = "error-active";
+    spanPassConf.className = "error-active";
+  } else if (!passValid) {
+    inputPass.className = "invalid";
+    spanPass.textContent = "This field is required";
+    spanPass.className = "error-active";
+  } else if (!passConfValid) {
+    inputPassConf.className = "invalid";
+    spanPassConf.textContent = "This field is required";
+    spanPassConf.className = "error-active";
+  } else {
+    if (passTest.test(inputPass.value)) {
+      inputPass.className = "valid";
+      spanPass.textContent = "";
+      spanPass.className = "error-inactive";
+    } else {
+      inputPass.className = "invalid";
+      spanPass.textContent = passTip;
+      spanPass.className = "error-active";
+    }
+  }
+}
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  checkEmail();
+  checkCountry();
+  checkZipcode();
+  checkPassword();
+});
+
+// check on moving away from the focused field
+inputEmail.addEventListener("blur", checkEmail);
+selectCountry.addEventListener("blur", checkCountry);
+inputZip.addEventListener("blur", checkZipcode);
+inputPass.addEventListener("blur", checkPassword);
